@@ -11,4 +11,16 @@ export function reqGetSecSubjectList(parentId) {
 		url: `${BASE_URL}/get/${parentId}`,
 		method: 'get',
 	});
+} 
+// 添加课程分类
+export function reqAddSubjectList(title, parentId) {
+	console.log(title, parentId);
+	return request({
+		url: `${BASE_URL}/save`,
+		method: 'POST',
+		data: {
+			title,
+			parentId,
+		},
+	});
 }
