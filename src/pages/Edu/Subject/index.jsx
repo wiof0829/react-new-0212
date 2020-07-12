@@ -43,11 +43,14 @@ class Subject extends Component {
     this.props.getSubjectList(current, size)
     this.currentPage = current
   }
+  bangoCilck = () => {
+    this.props.history.push('/edu/subject/add')
+  }
   render() {
     console.log(this.props)
     return (
       <div className='wap-wap'>
-        <Button type='primary' className='wap-btn'>
+        <Button type='primary' className='wap-btn' onClick={this.bangoCilck}>
           <PlusOutlined />
           新建
         </Button>
@@ -59,9 +62,8 @@ class Subject extends Component {
             // 可展开项展示内容
             expandedRowRender: record => (
               <p style={{ margin: 0 }}>{record.description}</p>
+              
             ),
-            // 控制是否可展开
-            rowExpandable: record => record.name !== 'Not Expandable'
           }}
           //表示里面的数据
           dataSource={this.props.subjectList.items}

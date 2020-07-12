@@ -1,3 +1,16 @@
 {
-  "javascript.implicitProjectConfig.experimentalDecorators": true
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "wxml": "html"
+  },
+  // 启用后，按 TAB 键时，将展开 Emmet 缩写。
+  "emmet.triggerExpansionOnTab": true,
+  "workbench.editorAssociations": [],
+  "javascript.implicitProjectConfig.experimentalDecorators": true,
+  "[json]": {
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.suggest.insertMode": "replace"
+  },
 }
