@@ -1,17 +1,31 @@
-import { reqGetSubjectList } from '@api/edu/subject'
+import { reqGetSubjectList, reqGetSecSubjectList } from '@api/edu/subject';
 
-import { GET_SUBJECT_LIST } from './constants'
+import { GET_SUBJECT_LIST, GET_SECSUBJECT_LIST } from './constants';
 // 获取一级分类的同步
-const getSubjectListSync = list => ({
-  type: GET_SUBJECT_LIST,
-  data: list
-})
+const getSubjectListSync = (list) => ({
+	type: GET_SUBJECT_LIST,
+	data: list,
+});
 
 export const getSubjectList = (page, limit) => {
-  return dispatch => {
-    return reqGetSubjectList(page, limit).then(response => {
-      dispatch(getSubjectListSync(response))
-      return response
-    })
-  }
-}
+	return (dispatch) => {
+		return reqGetSubjectList(page, limit).then((response) => {
+			dispatch(getSubjectListSync(response));
+			return response;
+		});
+	};
+};
+//二级分类获取
+const getSecSubjectListSync = (list) => ({
+	type: GET_SECSUBJECT_LIST,
+	data: list,
+});
+// 获取二级课程分类异步action
+export const getSecSubjectList = (parentId) => {
+	return (dispatch) => {
+		return reqGetSecSubjectList(parentId).then((response) => {
+			dispatch(getSecSubjectListSync(response));
+			return response;
+		});
+	};
+};

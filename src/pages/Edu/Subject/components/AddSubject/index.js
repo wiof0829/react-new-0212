@@ -47,7 +47,7 @@ export default class index extends Component {
 					onFinishFailed={onFinishFailed}>
 					<Form.Item
 						// 表示提示文字
-						label='课程分类名称'
+						label='课程分类'
 						// 表单项提交时的属性
 						name='subjectname'
 						// 校验规则
@@ -80,7 +80,6 @@ export default class index extends Component {
 						</Button>
 					</Form.Item>
 				</Form>
-				xinjina
 			</Card>
 		);
 	}

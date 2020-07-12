@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Button, Table } from 'antd';
 import { PlusOutlined, DeleteOutlined, FormOutlined } from '@ant-design/icons'
 // import { reqGetSubjectList } from '@api/edu/subject'
-import { getSubjectList } from './redux'
+import { getSubjectList ,getSecSubjectList} from './redux'
 import { connect } from 'react-redux'
 
 import './index.less'
@@ -26,7 +26,7 @@ const columns = [
 ];
 @connect(
   state => ({ subjectList: state.subjectList }),
-  { getSubjectList }
+  { getSubjectList,getSecSubjectList }
 )
 class Subject extends Component {
   currentPage = 1
@@ -46,6 +46,13 @@ class Subject extends Component {
   bangoCilck = () => {
     this.props.history.push('/edu/subject/add')
   }
+  handleClickExpand = (expanded, record) => {
+    if (expanded) {
+      // 请求二级菜单数据
+      this.props.getSecSubjectList(record._id)
+    }
+  }
+  han
   render() {
     console.log(this.props)
     return (
@@ -59,11 +66,7 @@ class Subject extends Component {
           columns={columns}
           // 控制可展开项
           expandable={{
-            // 可展开项展示内容
-            expandedRowRender: record => (
-              <p style={{ margin: 0 }}>{record.description}</p>
-              
-            ),
+            onExpand: this.handleClickExpand
           }}
           //表示里面的数据
           dataSource={this.props.subjectList.items}
@@ -73,7 +76,6 @@ class Subject extends Component {
             showQuickJumper: true, //是否显示快速跳转
             showSizeChanger: true, // 是否显示修改每页显示数据数量
             pageSizeOptions: ['5', '10', '15', '20'], //设置每天显示数据数量的配置项
-            // defaultPageSize: 5 //每页默认显示数据条数 默认是10,
             onChange: this.handlePageChange,
             onShowSizeChange: this.handleSizeChange,
             current: this.currentPage
