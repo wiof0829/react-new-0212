@@ -1,4 +1,4 @@
-import { GET_SUBJECT_LIST, GET_SECSUBJECT_LIST } from './constants';
+import { GET_SUBJECT_LIST, GET_SECSUBJECT_LIST, UPDATE_SUBJECT } from './constants';
 
 const initSubjectList = {
 	total: 0, // 总数
@@ -23,6 +23,18 @@ export default function subjectList(prevState = initSubjectList, action) {
 					}
 				});
 			}
+		case UPDATE_SUBJECT:
+			prevState.items.forEach((subject) => {
+				if (subject._id === action.data.id) {
+					subject.title = action.data.title;
+					return;
+				}
+				subject.children.forEach((secSubject) => {
+					if (secSubject._id === action.data.id) {
+						secSubject.title = action.data.title;
+					}
+				});
+			});
 			return {
 				...prevState,
 			};

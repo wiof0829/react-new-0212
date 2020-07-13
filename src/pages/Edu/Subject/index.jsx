@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import { Button, Table, Tooltip, Input } from 'antd'
+import { Button, Table, Tooltip, Input, message } from 'antd'
 import { PlusOutlined, DeleteOutlined, FormOutlined } from '@ant-design/icons'
 // import { reqGetSubjectList } from '@api/edu/subject'
-import { getSubjectList, getSecSubjectList } from './redux'
+import { getSubjectList, getSecSubjectList, updateSubject } from './redux'
 import { connect } from 'react-redux'
 
 import './index.less'
 
 @connect(
   state => ({ subjectList: state.subjectList }),
-  { getSubjectList, getSecSubjectList }
+  { getSubjectList, getSecSubjectList, updateSubject }
 )
 class Subject extends Component {
   currentPage = 1
@@ -56,6 +56,20 @@ class Subject extends Component {
       subjectTitle: e.target.value
     })
   }
+  //取消的回调
+  handleCancle = () => {
+    this.setState({
+      subjectId: '',
+      subjectTitle: ''
+    })
+  }
+  // 确认事件回调
+  handleUpdata = () => {
+    let { subjectId, subjectTitle } = this.state
+    this.props.updateSubject(subjectTitle, subjectId)
+    message.success('更新成功')
+    this.handleCancle()
+  }
   render() {
     const columns = [
       {
@@ -81,22 +95,21 @@ class Subject extends Component {
         key: 'x',
         // 自定义这一列要渲染的内容
         render: value => {
-          //判断当前数据的id是否和state里面subjectId的值是相同的,如果相同,展示确认和取消按钮,否则展示修改和删除按钮
-
           if (this.state.subjectId === value._id) {
             return (
               <>
-                <Button type='primary' className='update-btn'>
+                <Button type='primary' className='update-btn'
+                  onClick={this.handleUpdata}>
                   确认
                 </Button>
-                <Button type='danger'>取消</Button>
+                <Button type='danger' onClick={this.handleCancle}>取消</Button>
               </>
             )
           }
 
           return (
             <>
-              <Tooltip title='更新课程分类'>
+              <Tooltip title='更新分类'>
                 <Button
                   type='primary'
                   className='update-btn'
@@ -105,7 +118,7 @@ class Subject extends Component {
                   <FormOutlined />
                 </Button>
               </Tooltip>
-              <Tooltip title='删除课程分类'>
+              <Tooltip title='删除分类'>
                 <Button type='danger'>
                   <DeleteOutlined />
                 </Button>

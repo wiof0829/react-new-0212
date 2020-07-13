@@ -11,7 +11,7 @@ export function reqGetSecSubjectList(parentId) {
 		url: `${BASE_URL}/get/${parentId}`,
 		method: 'get',
 	});
-} 
+}
 // 添加课程分类
 export function reqAddSubjectList(title, parentId) {
 	console.log(title, parentId);
@@ -21,6 +21,17 @@ export function reqAddSubjectList(title, parentId) {
 		data: {
 			title,
 			parentId,
+		},
+	});
+}
+//删除课程分类
+export function reqUpdateSubjectList(title, id) {
+	return request({
+		url: `${BASE_URL}/update`,
+		method: 'PUT',
+		data: {
+			title,
+			id,
 		},
 	});
 }

@@ -1,6 +1,6 @@
-import { reqGetSubjectList, reqGetSecSubjectList } from '@api/edu/subject';
+import { reqGetSubjectList, reqGetSecSubjectList, reqUpdateSubjectList } from '@api/edu/subject';
 
-import { GET_SUBJECT_LIST, GET_SECSUBJECT_LIST } from './constants';
+import { GET_SUBJECT_LIST, GET_SECSUBJECT_LIST, UPDATE_SUBJECT } from './constants';
 // 获取一级分类的同步
 const getSubjectListSync = (list) => ({
 	type: GET_SUBJECT_LIST,
@@ -26,6 +26,18 @@ export const getSecSubjectList = (parentId) => {
 		return reqGetSecSubjectList(parentId).then((response) => {
 			dispatch(getSecSubjectListSync(response));
 			return response;
+		});
+	};
+};
+//删除分类
+const updateSubjectSync = data => ({
+	type: UPDATE_SUBJECT,
+	data
+});
+export const updateSubject= (title, id) => {
+	return (dispath) => {
+		reqUpdateSubjectList(title, id).then((res) => {
+			dispath(updateSubjectSync({title,id}));
 		});
 	};
 };
