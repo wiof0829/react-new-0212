@@ -10,25 +10,17 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-
 import relativeTime from "dayjs/plugin/relativeTime";
-
 import { connect } from "react-redux";
 import SearchForm from "./SearchForm";
-
+import { getLessonList } from './redux'
 import "./index.less";
-
 dayjs.extend(relativeTime);
-
 @connect(
   (state) => ({
-    // courseList: state.courseList
-    // permissionValueList: filterPermissions(
-    //   state.course.permissionValueList,
-    //   "Course"
-    // )
-  })
-  // { getcourseList }
+    chapterList: state.chapterList
+  }),
+  { getLessonList }
 )
 class Chapter extends Component {
   state = {
@@ -37,7 +29,6 @@ class Chapter extends Component {
     previewImage: "",
     selectedRowKeys: [],
   };
-
   showImgModal = (img) => {
     return () => {
       this.setState({
@@ -46,23 +37,18 @@ class Chapter extends Component {
       });
     };
   };
-
   handleImgModal = () => {
     this.setState({
       previewVisible: false,
     });
   };
-
   componentDidMount() {
-    // const { page, limit } = this.state;
-    // this.handleTableChange(page, limit);
-  }
 
+  }
   handleTableChange = (page, limit) => {
     this.setState({
       tableLoading: true,
     });
-
     this.getcourseList({ page, limit }).finally(() => {
       this.setState({
         tableLoading: false,
@@ -71,7 +57,6 @@ class Chapter extends Component {
       });
     });
   };
-
   getcourseList = ({ page, limit, Coursename, nickName }) => {
     return this.props
       .getcourseList({ page, limit, Coursename, nickName })
@@ -83,16 +68,20 @@ class Chapter extends Component {
         message.success("获取用户列表数据成功");
       });
   };
-
   onSelectChange = (selectedRowKeys) => {
     this.setState({
       selectedRowKeys,
     });
   };
-
+  handleClickExpand = (expand, record) => {
+    console.log(expand, record)
+    if (expand) {
+      //发送请求获取数据
+      this.props.getLessonList(record._id)
+    }
+  }
   render() {
     const { previewVisible, previewImage, selectedRowKeys } = this.state;
-
     const columns = [
       {
         title: "章节名称",
@@ -134,118 +123,10 @@ class Chapter extends Component {
         },
       },
     ];
-
-    const data = [
-      {
-        id: "111",
-        title: "第一章节",
-        children: [
-          {
-            id: "1",
-            title: "第一课时",
-            free: false,
-            videoSourceId: "756cf06db9cb4f30be85a9758b19c645",
-          },
-          {
-            id: "2",
-            title: "第二课时",
-            free: true,
-            videoSourceId: "2a02d726622f4c7089d44cb993c531e1",
-          },
-          {
-            id: "3",
-            title: "第三课时",
-            free: true,
-            videoSourceId: "4e560c892fdf4fa2b42e0671aa42fa9d",
-          },
-        ],
-      },
-      {
-        id: "222",
-        title: "第二章节",
-        children: [
-          {
-            id: "4",
-            title: "第一课时",
-            free: false,
-            videoSourceId: "756cf06db9cb4f30be85a9758b19c645",
-          },
-          {
-            id: "5",
-            title: "第二课时",
-            free: true,
-            videoSourceId: "2a02d726622f4c7089d44cb993c531e1",
-          },
-          {
-            id: "6",
-            title: "第三课时",
-            free: true,
-            videoSourceId: "4e560c892fdf4fa2b42e0671aa42fa9d",
-          },
-        ],
-      },
-      {
-        id: "333",
-        title: "第三章节",
-        children: [
-          {
-            id: "1192252824606289921",
-            title: "第一课时",
-            free: false,
-            videoSourceId: "756cf06db9cb4f30be85a9758b19c645",
-          },
-          {
-            id: "1192628092797730818",
-            title: "第二课时",
-            free: true,
-            videoSourceId: "2a02d726622f4c7089d44cb993c531e1",
-          },
-          {
-            id: "1192632495013380097",
-            title: "第三课时",
-            free: true,
-            videoSourceId: "4e560c892fdf4fa2b42e0671aa42fa9d",
-          },
-        ],
-      },
-    ];
-
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
-      // hideDefaultSelections: true,
-      // selections: [
-      //   Table.SELECTION_ALL,
-      //   Table.SELECTION_INVERT,
-      //   {
-      //     key: "odd",
-      //     text: "Select Odd Row",
-      //     onSelect: changableRowKeys => {
-      //       let newSelectedRowKeys = [];
-      //       newSelectedRowKeys = changableRowKeys.filter((key, index) => {
-      //         if (index % 2 !== 0) {
-      //           return false;
-      //         }
-      //         return true;
-      //       });
-      //       this.setState({ selectedRowKeys: newSelectedRowKeys });
-      //     }
-      //   },
-      //   {
-      //     key: "even",
-      //     text: "Select Even Row",
-      //     onSelect: changableRowKeys => {
-      //       let newSelectedRowKeys = [];
-      //       newSelectedRowKeys = changableRowKeys.filter((key, index) => {
-      //         if (index % 2 !== 0) {
-      //           return true;
-      //         }
-      //         return false;
-      //       });
-      //       this.setState({ selectedRowKeys: newSelectedRowKeys });
-      //     }
-      //   }
-      // ]
+
     };
 
     return (
@@ -290,8 +171,11 @@ class Chapter extends Component {
           <Table
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={data}
-            rowKey="id"
+            dataSource={this.props.chapterList.items}
+            rowKey="_id"
+            expandable={{
+              onExpand: this.handleClickExpand
+            }}
           />
         </div>
 
