@@ -1,24 +1,27 @@
 import React, { Component } from "react";
-import { Button, Table, Tooltip, Input, message } from 'antd'
-import { PlusOutlined, DeleteOutlined, FormOutlined } from '@ant-design/icons'
-// import { reqGetSubjectList } from '@api/edu/subject'
-import { getSubjectList, getSecSubjectList, updateSubject } from './redux'
+import { Button, Table, Tooltip, Input, message, Modal } from 'antd'
+import { PlusOutlined, DeleteOutlined, FormOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import {
+  getSubjectList, getSecSubjectList, updateSubject
+} from './redux'
 import { connect } from 'react-redux'
 
 import './index.less'
+import { reqDelSubject } from '@api/edu/subject'
 
+const { confirm } = Modal
 @connect(
   state => ({ subjectList: state.subjectList }),
   { getSubjectList, getSecSubjectList, updateSubject }
 )
 class Subject extends Component {
   currentPage = 1
+  pageSize = 10
   state = {
     subjectId: '',
     subjectTitle: '' //用于设置受控组件
   }
   componentDidMount() {
-    // this.getSubjectList(1, 10)
     this.props.getSubjectList(1, 10)
   }
   handlePageChange = (page, pageSize) => {
@@ -70,6 +73,37 @@ class Subject extends Component {
     message.success('更新成功')
     this.handleCancle()
   }
+  //删除
+  handleDel = value => () => {
+    confirm({
+      title: (
+        <>
+          <div>
+            确认删除
+          <span style={{ color: 'hotpink', fontSize: 30 }}>{value.title}</span>
+          </div>
+        </>
+      ),
+      icon: <ExclamationCircleOutlined />,
+      onOk: async () => {
+        await reqDelSubject(value._id)
+        message.success('删除成功')
+        const totalPage = Math.ceil(
+          this.props.subjectList.total / this.pageSize
+        )
+        if (
+          this.currentPage !== 1 &&
+          this.props.subjectList.items.length === 1 &&
+          totalPage === this.currentPage
+        ) {
+          // console.log('请求上一页数据了')
+          this.props.getSubjectList(--this.currentPage, this.pageSize)
+          return
+        }
+        this.props.getSubjectList(this.currentPage, this.pageSize)
+      }
+    })
+  }
   render() {
     const columns = [
       {
@@ -119,7 +153,7 @@ class Subject extends Component {
                 </Button>
               </Tooltip>
               <Tooltip title='删除分类'>
-                <Button type='danger'>
+                <Button type='danger' onClick={this.handleDel(value)}>
                   <DeleteOutlined />
                 </Button>
               </Tooltip>

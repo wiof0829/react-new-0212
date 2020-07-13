@@ -1,17 +1,25 @@
-import React from "react";
-import { Form, Select, Button } from "antd";
-
+import React, { useEffect, useState } from "react";
+import { Form, Select, Button, message } from "antd";
+import { connect } from 'react-redux'
+import { reqGetCourseList } from '@api/edu/course'
+import { getChapterList } from '../redux'
 import "./index.less";
 
 const { Option } = Select;
 
 function SearchForm() {
+  const [courseList, seCourseList] = useState([])
   const [form] = Form.useForm();
-
   const resetForm = () => {
-    form.resetFields();
+    form.resetFields(['courseId']);
   };
-
+  useEffect(() => {
+    async function fetchData() {
+      const res = await reqGetCourseList()
+      seCourseList(res)
+    }
+    fetchData()
+  }, [])
   return (
     <Form layout="inline" form={form}>
       <Form.Item name="teacherId" label="课程">

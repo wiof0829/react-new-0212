@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
 //导入antd组件
 import { Link } from 'react-router-dom';
 import { Card, Button, Form, Input, Select, message } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-//import { connect } from 'react-redux';
 import { reqGetSubjectList, reqAddSubjectList } from '@api/edu/subject'
 //样式
 import './index.less';
@@ -32,6 +33,7 @@ class AddSubject extends Component {
 		},
 	};
 	page = 1;
+	//加载一级分类
 	async componentDidMount() {
 		const res = await reqGetSubjectList(this.page++, 5)
 		this.setState({

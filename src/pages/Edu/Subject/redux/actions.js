@@ -30,14 +30,15 @@ export const getSecSubjectList = (parentId) => {
 	};
 };
 //删除分类
-const updateSubjectSync = data => ({
+const updateSubjectSync = (data) => ({
 	type: UPDATE_SUBJECT,
-	data
+	data,
 });
-export const updateSubject= (title, id) => {
+export const updateSubject = (title, id) => {
 	return (dispath) => {
 		reqUpdateSubjectList(title, id).then((res) => {
-			dispath(updateSubjectSync({title,id}));
+			dispath(updateSubjectSync({ title, id }));
+			return res;
 		});
 	};
 };
