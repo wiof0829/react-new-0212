@@ -9,10 +9,22 @@ export function reqGetLessonList(chapterId) {
 }
 
 // 新增课时, 上传视频, 获取七牛云token的方法
-
 export function reqGetQiniuToken() {
 	return request({
 		url: '/uploadtoken',
 		method: 'GET',
+	});
+}
+//新增课时成功
+export function reqAddLesson({ chapterId, title, free, video }) {
+	return request({
+		url: `${BASE_URL}/save`,
+		method: 'POST',
+		data: {
+			chapterId,
+			title,
+			free,
+			video,
+		},
 	});
 }
