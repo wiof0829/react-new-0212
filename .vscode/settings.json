@@ -13,4 +13,5 @@
     },
     "editor.suggest.insertMode": "replace"
   },
+  "winopacity.opacity": 200,
 }

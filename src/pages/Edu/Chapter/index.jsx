@@ -9,6 +9,7 @@ import {
   FormOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+import Player from 'griffith'
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { connect } from "react-redux";
@@ -25,17 +26,18 @@ dayjs.extend(relativeTime);
 class Chapter extends Component {
   state = {
     searchLoading: false,
+    // 控制modal窗口是否展示
     previewVisible: false,
-    previewImage: "",
+    // previewImage: "",
     selectedRowKeys: [],
+    video: ''
   };
-  showImgModal = (img) => {
-    return () => {
-      this.setState({
-        previewVisible: true,
-        previewImage: img,
-      });
-    };
+  showModal = (video) => () => {
+    this.setState({
+      previewVisible: true,
+      // previewImage: img,
+      video
+    });
   };
   handleImgModal = () => {
     this.setState({
@@ -81,10 +83,10 @@ class Chapter extends Component {
     }
   }
   goAddLesson = data => () => {
-    this.props.history.push('/edu/chapter/addlesson',data)
+    this.props.history.push('/edu/chapter/addlesson', data)
   }
   render() {
-    const { previewVisible, previewImage, selectedRowKeys } = this.state;
+    const { previewVisible, selectedRowKeys } = this.state;
     const columns = [
       {
         title: "章节名称",
@@ -97,6 +99,15 @@ class Chapter extends Component {
           return isFree === true ? "是" : isFree === false ? "否" : "";
         },
       },
+      //视频预览展示
+      {
+        title: "视频",
+        render: (value) => {
+          if (!value.free) return
+          return <Button onClick={this.showModal(value.video)}>预览</Button>
+          // return isFree === true ? "是" : isFree === false ? "否" : "";
+        },
+      },
       {
         title: "操作",
         width: 300,
@@ -105,20 +116,23 @@ class Chapter extends Component {
           // if ("free" in data) {
           return (
             <div>
-              <Tooltip title="新增课时">
+              {data.free === undefined && (<Tooltip title="新增课时">
                 <Button type='primary'
+                  // marginRight={20}
+                  style={{ margin: "20 10" }, { marginRight: 10 }}
                   onClick={this.goAddLesson(data)}
                 >
                   <PlusOutlined />
                 </Button>
-              </Tooltip>
-              <Tooltip title="更新章节">
-                <Button type="primary" style={{ margin: "0 10px" }}>
+              </Tooltip>)}
+              <Tooltip title={data.free === undefined ? '更新章节' : '更新课时'}>
+                <Button type="primary" style={{ margin: "20 10" }, { marginRight: 10 }}>
                   <FormOutlined />
                 </Button>
               </Tooltip>
-              <Tooltip title="删除章节">
-                <Button type="danger">
+              <Tooltip title={data.free === undefined ? '更新课时' : '删除课时'}>
+                <Button type="danger"
+                >
                   <DeleteOutlined />
                 </Button>
               </Tooltip>
@@ -133,6 +147,18 @@ class Chapter extends Component {
       onChange: this.onSelectChange,
 
     };
+    const sources = {
+      hd: {
+        // play_url: this.state.video,
+        play_url: this.state.video,
+        bitrate: 1,
+        duration: 1000,
+        format: '',
+        height: 500,
+        size: 160000,
+        width: 500
+      }
+    }
 
     return (
       <div>
@@ -183,13 +209,23 @@ class Chapter extends Component {
             }}
           />
         </div>
-
+        {/* antd的对话框组件 */}
         <Modal
+          title='视频'
           visible={previewVisible}
           footer={null}
+          // modal的关闭按钮
           onCancel={this.handleImgModal}
+          footer={null}
+          destroyOnClose={true}
         >
-          <img alt="example" style={{ width: "100%" }} src={previewImage} />
+          <Player
+            sources={sources}
+            id={'1'}
+            //视频封面
+            cover={'http://localhost:3000/logo512.png'}
+            duration={1000}
+          ></Player>
         </Modal>
       </div>
     );

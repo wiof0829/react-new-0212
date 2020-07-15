@@ -22,7 +22,6 @@ export default class MyUpload extends Component {
 				uploadToken: res.uploadToken,
 			};
 		} else {
-
 			this.state = {
 				expires: 0,
 				uploadToken: '',
@@ -99,7 +98,10 @@ export default class MyUpload extends Component {
 	}
 	render() {
 		return (
-			<Upload beforeUpload={this.handleBeforeUpload} customRequest={this.handleCustomRequest}>
+			<Upload
+				beforeUpload={this.handleBeforeUpload}
+				customRequest={this.handleCustomRequest}
+				accept='video/*'>
 				<Button>
 					<UploadOutlined /> 上传视频
 				</Button>
