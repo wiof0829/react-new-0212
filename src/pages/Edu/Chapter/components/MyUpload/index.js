@@ -7,7 +7,7 @@ import { reqGetQiniuToken } from '@api/edu/lesson';
 import * as qiniu from 'qiniu-js';
 import { nanoid } from 'nanoid';
 //设置上传文件大小
-const MAX_VIDEO_SIZE = 20 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 30 * 1024 * 1024;
 export default class MyUpload extends Component {
 	//定义一个构造函数，函数从缓存中获取数据
 	constructor() {

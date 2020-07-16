@@ -10,6 +10,7 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import Player from 'griffith'
+import screenfull from 'screenfull'
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { connect } from "react-redux";
@@ -111,6 +112,10 @@ class Chapter extends Component {
       }
     })
   }
+  handlescreenFull = () => {
+    // screenfull.request()
+    screenfull.toggle()
+  }
   render() {
     const { previewVisible, selectedRowKeys } = this.state;
     const columns = [
@@ -204,7 +209,9 @@ class Chapter extends Component {
               >
                 <span>批量删除</span>
               </Button>
-              <Tooltip title="全屏" className="course-table-btn">
+              <Tooltip title="全屏" className="course-table-btn"
+              onClick={this.handlescreenFull}
+              >
                 <FullscreenOutlined />
               </Tooltip>
               <Tooltip title="刷新" className="course-table-btn">
