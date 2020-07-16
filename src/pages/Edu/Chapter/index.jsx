@@ -14,14 +14,17 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { connect } from "react-redux";
 import SearchForm from "./SearchForm";
-import { getLessonList } from './redux'
+import {
+  getLessonList, batchDelChapter,
+  batchDelLesson, chapterList
+} from './redux'
 import "./index.less";
 dayjs.extend(relativeTime);
 @connect(
   (state) => ({
     chapterList: state.chapterList
   }),
-  { getLessonList }
+  { getLessonList, batchDelChapter, batchDelLesson }
 )
 class Chapter extends Component {
   state = {
@@ -84,6 +87,29 @@ class Chapter extends Component {
   }
   goAddLesson = data => () => {
     this.props.history.push('/edu/chapter/addlesson', data)
+  }
+  shanchuJian = () => {
+    Modal.confirm({
+      title: '确认删除？',
+      onOk: async () => {
+        let chapterIds = []
+        let lessonIds = []
+        let selectedRowKeys = this.state.selectedRowKeys
+        let chapterList = this.props.chapterList.items
+        chapterList.forEach(chapter => {
+          let chapterId = chapter._id
+          let index = selectedRowKeys.indexOf(chapterId)
+          if (index > -1) {
+            let newArr = selectedRowKeys.splice(index, 1)
+            chapterIds.push(newArr[0])
+          }
+        })
+        lessonIds = [...selectedRowKeys]
+        await this.props.batchDelChapter(chapterIds)
+        await this.props.batchDelLesson(lessonIds)
+        message.success('批量删除成功')
+      }
+    })
   }
   render() {
     const { previewVisible, selectedRowKeys } = this.state;
@@ -173,7 +199,9 @@ class Chapter extends Component {
                 <PlusOutlined />
                 <span>新增</span>
               </Button>
-              <Button type="danger" style={{ marginRight: 10 }}>
+              <Button type="danger" style={{ marginRight: 10 }}
+                onClick={this.shanchuJian}
+              >
                 <span>批量删除</span>
               </Button>
               <Tooltip title="全屏" className="course-table-btn">
