@@ -7,3 +7,22 @@ export function reqGetCourseList() {
 		methodL: `GET`,
 	});
 }
+export function reqGetCourseLimitList({
+	page,
+	limit,
+	title,
+	teacherId,
+	subjectId,
+	subjectParentId,
+}) {
+	return request({
+		url: `${BASE_URL}/${page}/${limit}`,
+		ethod: 'GET',
+		params: {
+			title,
+			teacherId,
+			subjectId,
+			subjectParentId,
+		},
+	});
+}

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Select, Cascader, Button } from "antd";
+import { Form, Input, Select, Cascader, Button, message } from "antd";
+import { FormattedMessage, useIntl } from 'react-intl'
+import { connect } from 'react-redux'
 import { reqGetAllTeacherList } from '@api/edu/teacher'
-import { reqALLSubjectList } from '@api/edu/subject'
+import { reqALLSubjectList, reqGetSecSubjectList } from '@api/edu/subject'
+import { getCourseList } from '../redux'
 import "./index.less";
 const { Option } = Select;
-function SearchForm() {
+function SearchForm(props) {
+  const intl = useIntl()
   const [form] = Form.useForm()
   //存储讲师列表状态
   const [teacherList, setTeacherList] = useState([])
@@ -18,50 +22,87 @@ function SearchForm() {
         reqGetAllTeacherList(),
         reqALLSubjectList()
       ])
+      const options = subjectList.map(subject => {
+        return {
+          value: subject._id,
+          label: subject.title,
+          isLeaf: false
+        }
+      })
       // console.log(res)
       setTeacherList(teachers)
-      setSubjectList(subjectList)
+      setSubjectList(options)
     }
     fetchData()
   }, [])
-  // const [options, setOptions] = useState([
-  //   {
-  //     value: "zhejiang",
-  //     label: "Zhejiang",
-  //     isLeaf: false
-  //   },
-  //   {
-  //     value: "jiangsu",
-  //     label: "Jiangsu",
-  //     isLeaf: false
-  //   }
-  // ]);
-  const options = subjectList.map(subject => {
-    return {
-      value: subject._id,
-      label: subject.title,
-      isLeaf: false // false表示有子数据, true表示没有子数据
-    }
-  })
-
   const onChange = (value, selectedOptions) => {
     console.log(value, selectedOptions);
   };
-  const loadData = selectedOptions => {
-   
+  const loadData = async selectedOptions => {
+    const targetOption = selectedOptions[selectedOptions.length - 1]
+    targetOption.loading = true
+    //发送异步请求
+    let secSubject = await reqGetSecSubjectList(targetOption.value)
+    secSubject = secSubject.items.map(item => {
+      return {
+        value: item._id,
+        label: item.title
+      }
+    })
+    // 让小圆圈隐藏
+    targetOption.loading = false
+    //将二级数据添加给一级的children属性
+    if (secSubject.length > 0) {
+      targetOption.children = secSubject
+    } else {
+      targetOption.isLeaf = true
+    }
+    //更新subject
+    setSubjectList([...subjectList])
   };
   const resetForm = () => {
     form.resetFields();
   };
+  const finish = async value => {
+    let subjectId
+    let subjectParentId
+    if (value.subject && value.subject.length > 1) {
+      subjectId = value.subject[1]
+      subjectParentId = value.subject[0]
+    }
+    if (value.subject && value.subject.length === 1) {
+      subjectId = value.subject[0]
+      subjectParentId = 0
+    }
+    const data = {
+      page: 1,
+      limit: 5,
+      title: value.title,
+      teacherId: value.teacherId,
+      subjectId,
+      subjectParentId
+    }
+    await props.getCourseList(data)
+    //提示
+    message.success('课程数据获取成功')
+  }
   return (
-    <Form layout="inline" form={form}>
-      <Form.Item name="title" label="标题">
-        <Input placeholder="课程标题" style={{ width: 250, marginRight: 20 }} />
+    <Form layout='inline' form={form} onFinish={finish}>
+      {/* <Form.Item name='title' label='标题'> 国际化之前写法*/}
+      <Form.Item name='title' label={<FormattedMessage id='title' />}>
+        <Input
+          placeholder={intl.formatMessage({
+            id: 'title'
+          })}
+          style={{ width: 250, marginRight: 20 }}
+        />
       </Form.Item>
-      <Form.Item name="teacherId" label="讲师">
+      <Form.Item name='teacherId' label={<FormattedMessage id='teacher' />}>
         <Select
           allowClear
-          placeholder="课程讲师"
+          placeholder={intl.formatMessage({
+            id: 'teacher'
+          })}
           style={{ width: 250, marginRight: 20 }}
         >
           {teacherList.map(item => (
@@ -69,30 +110,40 @@ function SearchForm() {
               {item.name}
             </Option>
           ))}
+          {/* <Option value='lucy1'>Lucy1</Option>
+          <Option value='lucy2'>Lucy2</Option>
+          <Option value='lucy3'>Lucy3</Option> */}
         </Select>
       </Form.Item>
-      <Form.Item name="subject" label="分类">
+      <Form.Item name='subject' label={<FormattedMessage id='subject' />}>
         <Cascader
           style={{ width: 250, marginRight: 20 }}
-          options={options}
-          loadData={loadData}
-          onChange={onChange}
-          changeOnSelect
-          placeholder="课程分类"
+          options={subjectList} // 多级拉下菜单的数据
+          loadData={loadData} // 点击课程分类的时候,loadData会触发,在这里去加载二级数据
+          onChange={onChange} // 选中课程分类之后触发
+          // changeOnSelect
+          placeholder={intl.formatMessage({
+            id: 'subject'
+          })}
         />
       </Form.Item>
       <Form.Item>
         <Button
-          type="primary"
-          htmlType="submit"
-          style={{ margin: "0 10px 0 30px" }}
+          type='primary'
+          htmlType='submit'
+          style={{ margin: '0 10px 0 30px' }}
         >
-          查询
+          {<FormattedMessage id='searchBtn' />}
         </Button>
-        <Button onClick={resetForm}>重置</Button>
+        <Button onClick={resetForm}>
+          {<FormattedMessage id='resetBtn' />}
+        </Button>
       </Form.Item>
     </Form>
-  );
+  )
 }
 
-export default SearchForm;
+export default connect(
+  null,
+  { getCourseList }
+)(SearchForm)

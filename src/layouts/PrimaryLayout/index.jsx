@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Layout, Menu, Dropdown, Breadcrumb } from "antd";
+import { Layout, Menu, Dropdown, Breadcrumb, Button } from "antd";
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -10,7 +10,7 @@ import {
 } from "@ant-design/icons";
 import { connect } from "react-redux";
 import { Link, withRouter } from "react-router-dom";
-
+import PubSub from 'pubsub-js'
 import SiderMenu from "../SiderMenu";
 import { AuthorizedRouter } from "@comps/Authorized";
 import { logout } from "@redux/actions/login";
@@ -75,6 +75,15 @@ class PrimaryLayout extends Component {
       </Menu.Item>
     </Menu>
   );
+  handleChangeLanguage = language => () => {
+    //将选中的语言传到app组件里面
+    PubSub.publish('LANGUAGE', language)
+
+    // 修改
+    this.setState({
+      currentLanguage: language
+    })
+  }
 
   selectRoute = (routes = [], pathname) => {
     for (let i = 0; i < routes.length; i++) {
@@ -138,8 +147,27 @@ class PrimaryLayout extends Component {
       user,
       location: { pathname },
     } = this.props;
-
     const route = this.selectRoute(routes, pathname);
+    const intlMenu = (
+      <Menu>
+        <Menu.Item>
+          <Button
+            type={this.state.currentLanguage === 'zh' ? 'link' : 'text'}
+            onClick={this.handleChangeLanguage('zh')}
+          >
+            中文
+          </Button>
+        </Menu.Item>
+        <Menu.Item>
+          <Button
+            type={this.state.currentLanguage === 'en' ? 'link' : 'text'}
+            onClick={this.handleChangeLanguage('en')}
+          >
+            english
+          </Button>
+        </Menu.Item>
+      </Menu>
+    )
 
     return (
       <Layout className="layout">
@@ -170,7 +198,9 @@ class PrimaryLayout extends Component {
                   </span>
                 </Dropdown>
                 <span className="site-layout-lang">
-                  <GlobalOutlined />
+                  <Dropdown overlay={intlMenu}>
+                    <GlobalOutlined />
+                  </Dropdown>
                 </span>
               </span>
             </span>
