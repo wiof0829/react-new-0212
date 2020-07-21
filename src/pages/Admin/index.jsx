@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import Analysis from "./Analysis";
 // import Monitor from "./Monitor";
-// import Search from "./Search";
+import Search from "./Search";
 // import Statistics from "./Statistics";
 
 export default class Admin extends Component {
@@ -10,9 +10,9 @@ export default class Admin extends Component {
     return (
       <div>
         <Analysis />
-        {/* <Monitor />
+        {/* <Monitor /> */}
         <Search />
-        <Statistics /> */}
+        {/* <Statistics /> */}
       </div>
     );
   }

@@ -1,7 +1,8 @@
-import Login from "@pages/Login";
-import NotFound from "@pages/404";
+import Login from '@pages/Login';
+import NotFound from '@pages/404';
+import Oauth from '@pages/Login/components/Oauth';
 
-//#region 
+//#region
 /* export const asyncRoutes = [
 	{
 		path: "/acl",
@@ -193,11 +194,16 @@ import NotFound from "@pages/404";
 // 常量路由
 export const constantRoutes = [
 	{
-		path: "/login",
+		path: '/login',
 		component: Login,
-		title: "登录",
+		title: '登录',
 	},
-	{ path: "*", component: NotFound },
+	{
+		path: '/oauth',
+		component: Oauth,
+		title: 'git授权登录',
+	},
+	{ path: '*', component: NotFound },
 ];
 
 /**
@@ -206,10 +212,10 @@ export const constantRoutes = [
 export const defaultRoutes = [
 	// 首页
 	{
-		path: "/",
-		component: "Admin",
-		icon: "home",
-		name: "后台管理系统",
+		path: '/',
+		component: 'Admin',
+		icon: 'home',
+		name: '后台管理系统',
 	},
 	// { path: "*", redirect: "/404", component: NotFound, hidden: true }
 ];
